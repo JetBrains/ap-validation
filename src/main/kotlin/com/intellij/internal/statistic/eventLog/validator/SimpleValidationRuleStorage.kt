@@ -13,7 +13,8 @@ import com.intellij.internal.statistic.eventLog.validator.storage.GlobalRulesHol
  * @param initialMetadata validation rules that will be used initially, they can be updated later (see [update]).
  * @param excludedFields  list of event data fields to be excluded from validation.
  */
-class SimpleValidationRuleStorage<T : Comparable<T>?>(initialMetadata: EventGroupRemoteDescriptors,
+
+class SimpleValidationRuleStorage<T : Comparable<T>?> @JvmOverloads constructor(initialMetadata: EventGroupRemoteDescriptors,
                                                       private val buildParser: EventLogBuildParser<T>,
                                                       private val excludedFields: List<String> = emptyList(),
                                                       utilRulesProducer: UtilRuleProducer = ValidationSimpleRuleFactory.REJECTING_UTIL_URL_PRODUCER) : ValidationRuleStorage<T> {
