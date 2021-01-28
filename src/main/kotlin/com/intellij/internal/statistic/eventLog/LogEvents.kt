@@ -115,6 +115,7 @@ class LogEventGroup(val id: String, val version: String) {
 
 class LogEventAction(val id: String, var state: Boolean = false, var count: Int = 1) {
   var data: MutableMap<String, Any> = Collections.emptyMap()
+    private set
 
   fun increment() {
     count++
