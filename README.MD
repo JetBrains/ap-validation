@@ -1,4 +1,4 @@
-# Library for validating events before sending them to the Analytics Platform
+# Library for validating statistics events before sending them to the server
 
 ##Usage
 

@@ -24,11 +24,11 @@ public abstract class PerformanceCareRule implements FUSRule {
   }
 
   /**
-   * <p>Validates event id and event data before recording it locally. Used to ensure that no personal or proprietary data is recorded.<p/>
+   * <p>Validates event id and event data before recording it locally. Used to ensure that no personal or proprietary data is recorded.</p>
    *
    * <ul>
    *     <li>{@link ValidationResultType#ACCEPTED} - data is checked and should be recorded as is;</li>
-   *     <li>{@link ValidationResultType#THIRD_PARTY} - data is correct but is implemented in an unknown third-party plugin, e.g. third-party file type<br/>
+   *     <li>{@link ValidationResultType#THIRD_PARTY} - data is correct but is implemented in an unknown third-party plugin, e.g. third-party file type</li>
    *     <li>{@link ValidationResultType#REJECTED} - unexpected data, e.g. cannot find run-configuration by provided id;</li>
    * </ul>
    *
