@@ -1583,11 +1583,48 @@ class StatisticsFilterGroupByBuildTest {
     doTestRejected(content, "182.56", "test.group.id", "second.test.group.id")
   }
 
+  @Test
+  fun `with incorrect build is not accepted`() {
+    val content = """
+{
+  "groups" : [{
+    "id" : "test.group.id",
+    "title" : "Test Group",
+    "description" : "Test group description",
+    "type" : "counter",
+    "builds" : [ {
+      "from" : "173.4284.118"
+    }]
+  }]
+}
+    """
+    doTestRejected(content, "abc", "test.group.id")
+  }
+
+  @Test
+  fun `with unparsed build is not accepted`() {
+    val content = """
+{
+  "groups" : [{
+    "id" : "test.group.id",
+    "title" : "Test Group",
+    "description" : "Test group description",
+    "type" : "counter",
+    "builds" : [ {
+      "from" : "173.4284.118"
+    }]
+  }]
+}
+    """
+    val groups = Gson().fromJson(content, EventGroupRemoteDescriptors::class.java)
+    val filterRules = EventGroupsFilterRules.create(groups) { null }
+    Assert.assertFalse(filterRules.accepts("test.group.id", "1", "unparsedVersion"))
+  }
+
   companion object {
     fun createEventGroupsFilterRules(content: String): EventGroupsFilterRules<EventLogBuild> {
       val groups = Gson().fromJson(content, EventGroupRemoteDescriptors::class.java)
-      val actual = EventGroupsFilterRules.create(groups, EventLogBuild.EVENT_LOG_BUILD_PRODUCER)
-      return actual
+      return EventGroupsFilterRules.create(groups, EventLogBuild.EVENT_LOG_BUILD_PRODUCER)
     }
   }
 }

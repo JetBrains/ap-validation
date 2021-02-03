@@ -1,6 +1,6 @@
 # Library for validating statistics events before sending them to the server
 
-##Usage
+## Usage
 
 ```kotlin
 fun main() {
