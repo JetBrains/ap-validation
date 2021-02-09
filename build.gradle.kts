@@ -14,7 +14,10 @@ repositories {
 }
 
 group = "org.jetbrains.intellij.deps"
-version  = "0.0.1"
+version  = "0.0.${findProperty("teamcity")
+    ?.takeIf { it is Map<*, *> }
+    ?.let { (it as Map<*, *>)["build.number"] }
+    ?: "x-SNAPSHOT"}"
 val artifactID = "ap-validation"
 
 
