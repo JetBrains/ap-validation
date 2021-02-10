@@ -1,6 +1,19 @@
 # Library for validating statistics events before sending them to the server
 
-## Usage
+
+### Installation
+
+```groovy
+repositories {
+    maven { url = uri("https://jetbrains.bintray.com/intellij-third-party-dependencies") }
+}
+
+dependencies {
+    implementation("org.jetbrains.intellij.deps:ap-validation:${version}")
+}
+```
+
+### How to use
 
 ```kotlin
 fun main() {
