@@ -61,12 +61,16 @@ open class SensitiveDataValidator<S: ValidationRuleStorage<*>>(val validationRul
                                                groupRules: EventGroupRules?): MutableMap<String, Any> {
     val validatedData: MutableMap<String, Any> = HashMap()
     for ((key, entryValue) in context.eventData) {
-      validatedData[key] = validateEventData(context, groupRules, key, entryValue)
+      val validateEventData = validateEventData(context, groupRules, key, entryValue)
+      val validatedFieldName = if (validationRulesStorage.isUnreachable())
+        ValidationResultType.UNREACHABLE_METADATA.description
+      else EventGroupRules.validateFieldName(key, validateEventData)
+      validatedData[validatedFieldName] = validateEventData
     }
     return validatedData
   }
 
-  protected fun validateEventData(context: EventContext,
+  private fun validateEventData(context: EventContext,
                                   groupRules: EventGroupRules?,
                                   key: String,
                                   entryValue: Any): Any {

@@ -91,7 +91,9 @@ public final class EventGroupRules {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>)data).entrySet()) {
         Object entryKey = entry.getKey();
         if (entryKey instanceof String) {
-          validatedData.put(entryKey, validateEventData(key + "." + entryKey, entry.getValue(), context));
+          Object validateEventData = validateEventData(key + "." + entryKey, entry.getValue(), context);
+          String validatedFieldName = validateFieldName((String) entryKey, validateEventData);
+          validatedData.put(validatedFieldName, validateEventData);
         }
         else {
           validatedData.put(entryKey, REJECTED.getDescription());
@@ -107,6 +109,27 @@ public final class EventGroupRules {
     FUSRule[] rules = eventDataRules.get(key);
     if (rules == null || rules.length == 0) return UNDEFINED_RULE.getDescription();
     return validateValue(data, context, rules);
+  }
+
+  public static @NotNull String validateFieldName(@NotNull String fieldName, @Nullable Object validateEventData) {
+    String undefinedRuleDescription = UNDEFINED_RULE.getDescription();
+    if (validateEventData instanceof String) {
+      if (undefinedRuleDescription.equals(validateEventData)) {
+        return undefinedRuleDescription;
+      }
+    } else if (validateEventData instanceof List<?>) {
+      List<?> eventData = (List<?>) validateEventData;
+      if (!eventData.isEmpty() && eventData.stream().allMatch(undefinedRuleDescription::equals)) {
+        return undefinedRuleDescription;
+      }
+    } else if (validateEventData instanceof Map<?, ?>) {
+      Map<?, ?> eventData = (Map<?, ?>) validateEventData;
+      if (!eventData.isEmpty() &&
+        eventData.keySet().stream().allMatch(value -> value instanceof String && undefinedRuleDescription.equals(value))) {
+        return undefinedRuleDescription;
+      }
+    }
+    return fieldName;
   }
 
   private static Object validateValue(@NotNull Object data, @NotNull EventContext context, FUSRule @NotNull [] rules) {
