@@ -6,6 +6,7 @@ import com.intellij.internal.statistic.eventLog.LogEvent
 import com.intellij.internal.statistic.eventLog.LogEventAction
 import com.intellij.internal.statistic.eventLog.validator.rules.EventContext
 import com.intellij.internal.statistic.eventLog.validator.rules.beans.EventGroupRules
+import com.intellij.internal.statistic.eventLog.validator.rules.impl.beans.EventDataField
 
 /**
  * Validates log event according to remote groups validation rules.
@@ -61,21 +62,20 @@ open class SensitiveDataValidator<S: ValidationRuleStorage<*>>(val validationRul
                                                groupRules: EventGroupRules?): MutableMap<String, Any> {
     val validatedData: MutableMap<String, Any> = HashMap()
     for ((key, entryValue) in context.eventData) {
-      val validateEventData = validateEventData(context, groupRules, key, entryValue)
-      val validatedFieldName = if (validationRulesStorage.isUnreachable())
-        ValidationResultType.UNREACHABLE_METADATA.description
-      else EventGroupRules.validateFieldName(key, validateEventData)
+      val (validatedFieldName, validateEventData) = validateEventData(context, groupRules, key, entryValue)
       validatedData[validatedFieldName] = validateEventData
     }
     return validatedData
   }
 
   private fun validateEventData(context: EventContext,
-                                  groupRules: EventGroupRules?,
-                                  key: String,
-                                  entryValue: Any): Any {
-    if (validationRulesStorage.isUnreachable()) return ValidationResultType.UNREACHABLE_METADATA.description
-    return if (groupRules == null) ValidationResultType.UNDEFINED_RULE.description
+                                groupRules: EventGroupRules?,
+                                key: String,
+                                entryValue: Any): EventDataField {
+    if (validationRulesStorage.isUnreachable()) return EventDataField(ValidationResultType.UNREACHABLE_METADATA.description,
+      ValidationResultType.UNREACHABLE_METADATA.description)
+    return if (groupRules == null) return EventDataField(ValidationResultType.UNDEFINED_RULE.description,
+      ValidationResultType.UNDEFINED_RULE.description)
     else groupRules.validateEventData(key, entryValue, context)
   }
 

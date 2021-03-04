@@ -44,18 +44,56 @@ class SensitiveDataValidatorTest {
 
 
     @Test
-    fun `test replace known fields with error description in nested objects`() {
+    fun `test not replace known fields with error description in nested objects`() {
         val groupDescriptors = createGroupDescriptors(hashMapOf("count.foo" to setOf("{enum:foo|bar}")))
         val sensitiveDataValidator =
             SensitiveDataValidator(SimpleValidationRuleStorage(groupDescriptors, EVENT_LOG_BUILD_PRODUCER))
-        val validatedEvent = sensitiveDataValidator.validateEvent(createEventLog(hashMapOf("count" to hashMapOf("foo" to "foo", "bar" to "bar"))))
+        val validatedEvent =
+            sensitiveDataValidator.validateEvent(createEventLog(hashMapOf("count" to hashMapOf("foo" to "foo",
+                "bar" to "bar"))))
         val data = validatedEvent?.event?.data
         assertNotNull(data)
         assertEquals(1, data.size)
-        val count = data["count"] as? Map<*,*>
+        val count = data["count"] as? Map<*, *>
         assertNotNull(count)
         assertEquals("foo", count["foo"])
-        assertEquals(ValidationResultType.UNDEFINED_RULE.description, count[ValidationResultType.UNDEFINED_RULE.description])
+        assertEquals(ValidationResultType.UNDEFINED_RULE.description,
+            count[ValidationResultType.UNDEFINED_RULE.description])
+    }
+
+    @Test
+    fun `test replace unknown fields with error description in list of objects`() {
+        val groupDescriptors = createGroupDescriptors()
+        val sensitiveDataValidator =
+            SensitiveDataValidator(SimpleValidationRuleStorage(groupDescriptors, EVENT_LOG_BUILD_PRODUCER))
+        val eventData = hashMapOf("count" to listOf(hashMapOf("foo" to "foo"), hashMapOf("bar" to "bar")))
+        val validatedEvent = sensitiveDataValidator.validateEvent(createEventLog(eventData))
+        val data = validatedEvent?.event?.data
+        assertNotNull(data)
+        assertEquals(1, data.size)
+        val count = data[ValidationResultType.UNDEFINED_RULE.description] as? List<*>
+        assertNotNull(count)
+        for (value in count) {
+            assertEquals(hashMapOf(ValidationResultType.UNDEFINED_RULE.description to ValidationResultType.UNDEFINED_RULE.description),
+                value)
+        }
+    }
+
+    @Test
+    fun `test not replace known fields with error description in list of objects`() {
+        val groupDescriptors = createGroupDescriptors(hashMapOf("count.foo" to setOf("{enum:foo|bar}")))
+        val sensitiveDataValidator =
+            SensitiveDataValidator(SimpleValidationRuleStorage(groupDescriptors, EVENT_LOG_BUILD_PRODUCER))
+        val eventData = hashMapOf("count" to listOf(hashMapOf("foo" to "foo"), hashMapOf("bar" to "bar")))
+        val validatedEvent = sensitiveDataValidator.validateEvent(createEventLog(eventData))
+        val data = validatedEvent?.event?.data
+        assertNotNull(data)
+        assertEquals(1, data.size)
+        val count = data["count"] as? List<*>
+        assertNotNull(count)
+        assertEquals(hashMapOf("foo" to "foo"), count[0])
+        assertEquals(hashMapOf(ValidationResultType.UNDEFINED_RULE.description to ValidationResultType.UNDEFINED_RULE.description),
+            count[1])
     }
 
     @Test
@@ -63,7 +101,8 @@ class SensitiveDataValidatorTest {
         val groupDescriptors = createGroupDescriptors()
         val sensitiveDataValidator =
             SensitiveDataValidator(SimpleValidationRuleStorage(groupDescriptors, EVENT_LOG_BUILD_PRODUCER))
-        val validatedEvent = sensitiveDataValidator.validateEvent(createEventLog(hashMapOf("count" to listOf("foo", "bar"))))
+        val validatedEvent =
+            sensitiveDataValidator.validateEvent(createEventLog(hashMapOf("count" to listOf("foo", "bar"))))
         val data = validatedEvent?.event?.data
         assertNotNull(data)
         assertEquals(1, data.size)
