@@ -6,6 +6,7 @@ import com.intellij.internal.statistic.eventLog.connection.metadata.EventGroupRe
 import com.intellij.internal.statistic.eventLog.validator.ValidationResultType;
 import com.intellij.internal.statistic.eventLog.validator.rules.EventContext;
 import com.intellij.internal.statistic.eventLog.validator.rules.FUSRule;
+import com.intellij.internal.statistic.eventLog.validator.rules.impl.beans.EventDataField;
 import com.intellij.internal.statistic.eventLog.validator.rules.utils.ValidationSimpleRuleFactory;
 import com.intellij.internal.statistic.eventLog.validator.storage.GlobalRulesHolder;
 import org.jetbrains.annotations.NotNull;
@@ -79,34 +80,60 @@ public final class EventGroupRules {
   /**
    * @return validated data, incorrect values are replaced with {@link ValidationResultType#getDescription()}
    */
-  public Object validateEventData(@NotNull String key,
-                                  @Nullable Object data,
-                                  @NotNull EventContext context) {
-    if (data instanceof String && VALIDATION_TYPES.contains(data)) return data;
-    if (myExcludedFields.contains(key)) return data;
-    if (data == null) return REJECTED.getDescription();
+  public EventDataField validateEventData(@NotNull String key,
+                                          @Nullable Object data,
+                                          @NotNull EventContext context) {
+    return validateEventData(key, data, context, key);
+  }
+
+  private EventDataField validateEventData(@NotNull String key,
+                                           @Nullable Object data,
+                                           @NotNull EventContext context,
+                                           @NotNull String fieldName) {
+    if (data == null) return new EventDataField(fieldName, REJECTED.getDescription());
+    if (data instanceof String && VALIDATION_TYPES.contains(data)) return new EventDataField(fieldName, data);
+    if (myExcludedFields.contains(key)) return new EventDataField(fieldName, data);
 
     if (data instanceof Map<?, ?>) {
       HashMap<Object, Object> validatedData = new HashMap<>();
-      for (Map.Entry<?, ?> entry : ((Map<?, ?>)data).entrySet()) {
+      for (Map.Entry<?, ?> entry : ((Map<?, ?>) data).entrySet()) {
         Object entryKey = entry.getKey();
         if (entryKey instanceof String) {
-          validatedData.put(entryKey, validateEventData(key + "." + entryKey, entry.getValue(), context));
-        }
-        else {
+          EventDataField field = validateEventData(key + "." + entryKey, entry.getValue(), context, (String) entryKey);
+          validatedData.put(field.getName(), field.getValue());
+        } else {
           validatedData.put(entryKey, REJECTED.getDescription());
         }
       }
-      return validatedData;
+      String validatedFieldName = fieldName;
+      if (!validatedData.isEmpty() &&
+        validatedData.keySet().stream().allMatch(value -> value instanceof String && UNDEFINED_RULE.getDescription().equals(value))) {
+        validatedFieldName = UNDEFINED_RULE.getDescription();
+      }
+      return new EventDataField(validatedFieldName, validatedData);
     }
 
     if (data instanceof List<?>) {
-      return ((List<?>)data).stream().map(value -> validateEventData(key, value, context)).collect(Collectors.toList());
+      List<Object> validatedData = new ArrayList<>();
+      List<String> fieldNames = new ArrayList<>();
+      for (Object value : ((List<?>) data)) {
+        EventDataField validatedField = validateEventData(key, value, context, fieldName);
+        validatedData.add(validatedField.getValue());
+        fieldNames.add(validatedField.getName());
+      }
+      String validatedFieldName = fieldName;
+      if (!validatedData.isEmpty() &&
+        fieldNames.stream().allMatch(value -> UNDEFINED_RULE.getDescription().equals(value))) {
+        validatedFieldName = UNDEFINED_RULE.getDescription();
+      }
+      return new EventDataField(validatedFieldName, validatedData);
     }
 
     FUSRule[] rules = eventDataRules.get(key);
-    if (rules == null || rules.length == 0) return UNDEFINED_RULE.getDescription();
-    return validateValue(data, context, rules);
+    if (rules == null || rules.length == 0) {
+      return new EventDataField(UNDEFINED_RULE.getDescription(), UNDEFINED_RULE.getDescription());
+    }
+    return new EventDataField(fieldName, validateValue(data, context, rules));
   }
 
   private static Object validateValue(@NotNull Object data, @NotNull EventContext context, FUSRule @NotNull [] rules) {

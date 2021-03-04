@@ -22,8 +22,9 @@ class EventGroupRulesTest {
                                             ValidationSimpleRuleFactory(REJECTING_UTIL_URL_PRODUCER),
                                             listOf(fieldToExclude))
     val eventContext = EventContext.create("test.event.id", mapOf(fieldToExclude to systemFieldValue))
-    val validatedEventData = groupRules.validateEventData(fieldToExclude, systemFieldValue, eventContext)
-    assertEquals(validatedEventData, systemFieldValue)
+    val (validatedFields, validatedEventData) = groupRules.validateEventData(fieldToExclude, systemFieldValue, eventContext)
+    assertEquals(systemFieldValue, validatedEventData)
+    assertEquals(fieldToExclude, validatedFields)
   }
 
   @Test
@@ -37,8 +38,9 @@ class EventGroupRulesTest {
     val fieldName = "count"
     val fieldValue = ValidationResultType.THIRD_PARTY.description
     val eventContext = EventContext.create("test.event.id", mapOf(fieldName to fieldValue))
-    val validatedEventData = groupRules.validateEventData(fieldName, fieldValue, eventContext)
-    assertEquals(validatedEventData, fieldValue)
+    val (validatedFields, validatedEventData) = groupRules.validateEventData(fieldName, fieldValue, eventContext)
+    assertEquals(fieldValue, validatedEventData)
+    assertEquals(fieldName, validatedFields)
   }
 
   @Test
@@ -52,8 +54,9 @@ class EventGroupRulesTest {
     val fieldName = "count"
     val fieldValue = listOf(ValidationResultType.THIRD_PARTY.description, ValidationResultType.UNREACHABLE_METADATA.description)
     val eventContext = EventContext.create("test.event.id", mapOf(fieldName to fieldValue))
-    val validatedEventData = groupRules.validateEventData(fieldName, fieldValue, eventContext)
-    assertEquals(validatedEventData, fieldValue)
+    val (validatedFields, validatedEventData) = groupRules.validateEventData(fieldName, fieldValue, eventContext)
+    assertEquals(fieldValue, validatedEventData)
+    assertEquals(fieldName, validatedFields)
   }
 
   private fun getMetadataContent(): EventGroupRemoteDescriptors {

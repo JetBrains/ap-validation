@@ -1,9 +1,12 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.intellij.internal.statistic.eventLog;
 
+import com.intellij.internal.statistic.eventLog.validator.ValidationResultType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 @ApiStatus.Internal
 public final class StatisticsEventEscaper {
@@ -31,6 +34,7 @@ public final class StatisticsEventEscaper {
    */
   @NotNull
   public static String escapeFieldName(@NotNull String str) {
+    if (Arrays.stream(ValidationResultType.values()).anyMatch(value -> str.equals(value.getDescription()))) return str;
     return escapeInternal(str, SYMBOLS_TO_REPLACE_FIELD_NAME, false);
   }
 
