@@ -1,10 +1,8 @@
-import com.jfrog.bintray.gradle.BintrayExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.4.20"
     java
-    id("com.jfrog.bintray") version "1.8.4"
     id("maven-publish")
 }
 
@@ -69,22 +67,13 @@ publishing {
             }
         }
     }
-}
-
-bintray {
-    user = System.getenv("BINTRAY_USER")
-    key = System.getenv("BINTRAY_KEY")
-
-    publish = true
-    pkg (delegateClosureOf<BintrayExtension.PackageConfig>{
-        repo = "intellij-third-party-dependencies"
-        name = "ap-validation"
-        userOrg = "jetbrains"
-
-        version(delegateClosureOf<BintrayExtension.VersionConfig> {
-            name = project.version.toString()
-        })
-    })
-
-    setPublications(publicationName)
+    repositories {
+        maven {
+            url = uri("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")
+            credentials {
+                username = findProperty("spaceClientId") as? String
+                password = findProperty("spaceSecret") as? String
+            }
+        }
+    }
 }
