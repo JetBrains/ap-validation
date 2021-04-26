@@ -5,7 +5,7 @@
 
 ```groovy
 repositories {
-    maven { url = uri("https://jetbrains.bintray.com/intellij-third-party-dependencies") }
+    maven { url = uri("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies") }
 }
 
 dependencies {
