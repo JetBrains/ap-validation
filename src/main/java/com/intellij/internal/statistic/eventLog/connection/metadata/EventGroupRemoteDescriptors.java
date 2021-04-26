@@ -63,8 +63,11 @@ public final class EventGroupRemoteDescriptors {
   }
 
   public static class GroupVersionRange {
-    public final String from;
-    public final String to;
+    public String from;
+    public String to;
+
+    public GroupVersionRange() {
+    }
 
     public GroupVersionRange(String from, String to) {
       this.from = from;
