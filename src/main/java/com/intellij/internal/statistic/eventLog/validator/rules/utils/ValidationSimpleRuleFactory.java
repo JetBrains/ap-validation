@@ -28,7 +28,7 @@ public final class ValidationSimpleRuleFactory {
 
   private final List<ValidationRuleProducer<?>> myRuleProducers;
 
-  private static final FUSRule UNPARSED_EXPRESSION = (s, c) -> ValidationResultType.INCORRECT_RULE;
+  public static final FUSRule UNPARSED_EXPRESSION = (s, c) -> ValidationResultType.INCORRECT_RULE;
 
   public ValidationSimpleRuleFactory(@NotNull UtilRuleProducer utilRuleProducer) {
     ArrayList<ValidationRuleProducer<?>> producers = new ArrayList<>(RULE_PRODUCERS);
