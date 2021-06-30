@@ -2,11 +2,11 @@
 package com.intellij.internal.statistic.eventLog.validator
 
 import com.intellij.internal.statistic.eventLog.EventLogSystemEvents
-import com.intellij.internal.statistic.eventLog.LogEvent
-import com.intellij.internal.statistic.eventLog.LogEventAction
+import com.intellij.internal.statistic.eventLog.newLogEvent
 import com.intellij.internal.statistic.eventLog.validator.rules.EventContext
 import com.intellij.internal.statistic.eventLog.validator.rules.beans.EventGroupRules
 import com.intellij.internal.statistic.eventLog.validator.rules.impl.beans.EventDataField
+import com.jetbrains.fus.reporting.model.lion3.LogEvent
 
 /**
  * Validates log event according to remote groups validation rules.
@@ -44,11 +44,7 @@ open class SensitiveDataValidator<S: ValidationRuleStorage<*>>(val validationRul
     val context = EventContext.create(eventId, data)
     val validatedEventId = guaranteeCorrectEventId(context, groupRules)
     val validatedEventData = guaranteeCorrectEventData(context, groupRules)
-    val validatedEvent = LogEventAction(validatedEventId, isState, count)
-    for (datum in validatedEventData) {
-      validatedEvent.addData(datum.key, datum.value)
-    }
-    return LogEvent(sessionId, build, bucket, eventTime, groupId, groupVersion, recorderVersion, validatedEvent)
+    return newLogEvent(sessionId, build, bucket, eventTime, groupId, groupVersion, recorderVersion, validatedEventId, isState, validatedEventData, count)
   }
 
   protected open fun guaranteeCorrectEventId(context: EventContext, groupRules: EventGroupRules?): String {

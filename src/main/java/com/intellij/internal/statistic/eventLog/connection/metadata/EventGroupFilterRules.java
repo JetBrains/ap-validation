@@ -2,6 +2,7 @@
 package com.intellij.internal.statistic.eventLog.connection.metadata;
 
 import com.intellij.internal.statistic.eventLog.util.StringUtil;
+import com.jetbrains.fus.reporting.model.metadata.EventGroupRemoteDescriptors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

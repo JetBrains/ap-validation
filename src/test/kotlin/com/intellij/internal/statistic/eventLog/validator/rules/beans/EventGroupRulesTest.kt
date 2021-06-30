@@ -1,12 +1,12 @@
 // Copyright 2000-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.intellij.internal.statistic.eventLog.validator.rules.beans
 
-import com.intellij.internal.statistic.eventLog.connection.metadata.EventGroupRemoteDescriptors
 import com.intellij.internal.statistic.eventLog.validator.ValidationResultType
 import com.intellij.internal.statistic.eventLog.validator.rules.EventContext
 import com.intellij.internal.statistic.eventLog.validator.rules.utils.ValidationSimpleRuleFactory
 import com.intellij.internal.statistic.eventLog.validator.rules.utils.ValidationSimpleRuleFactory.REJECTING_UTIL_URL_PRODUCER
 import com.intellij.internal.statistic.eventLog.validator.storage.GlobalRulesHolder
+import com.jetbrains.fus.reporting.model.metadata.EventGroupRemoteDescriptors
 import org.junit.Test
 import kotlin.test.assertEquals
 

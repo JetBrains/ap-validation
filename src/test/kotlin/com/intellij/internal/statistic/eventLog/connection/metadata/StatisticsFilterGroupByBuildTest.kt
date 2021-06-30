@@ -3,6 +3,7 @@ package com.intellij.internal.statistic.eventLog.connection.metadata
 
 import com.google.gson.Gson
 import com.intellij.internal.statistic.eventLog.EventLogBuild
+import com.jetbrains.fus.reporting.model.metadata.EventGroupRemoteDescriptors
 import org.junit.Assert
 import org.junit.Test
 

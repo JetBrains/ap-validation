@@ -1,8 +1,8 @@
 package com.intellij.internal.statistic.eventLog.validator
 
 import com.intellij.internal.statistic.eventLog.EventLogBuild.EVENT_LOG_BUILD_PRODUCER
-import com.intellij.internal.statistic.eventLog.connection.metadata.EventGroupRemoteDescriptors
 import com.intellij.internal.statistic.eventLog.newLogEvent
+import com.jetbrains.fus.reporting.model.metadata.EventGroupRemoteDescriptors
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
