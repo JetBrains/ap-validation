@@ -4,6 +4,7 @@ import com.intellij.internal.statistic.eventLog.validator.ValidationResultType
 import com.jetbrains.fus.reporting.model.lion3.LogEvent
 import com.jetbrains.fus.reporting.model.lion3.LogEventAction
 import com.jetbrains.fus.reporting.model.lion3.LogEventGroup
+import com.jetbrains.fus.reporting.model.lion4.FusRecorder
 import java.lang.StringBuilder
 import java.util.*
 import javax.naming.ldap.Rdn.escapeValue
@@ -65,6 +66,15 @@ object StatisticsEventEscaper {
         val escapedData = hashMapOf<String, Any>()
         for ((key, value) in eventData) {
             escapedData[escapeFieldName(key)] = escapeEventDataValue(value)
+        }
+        return escapedData
+    }
+
+    @JvmStatic
+    fun escapeIds(eventData: Map<String, String>): HashMap<String, String> {
+        val escapedData = hashMapOf<String, String>()
+        for ((key, value) in eventData) {
+            escapedData[escapeFieldName(key)] = escapeEventIdOrFieldValue(value)
         }
         return escapedData
     }
@@ -201,4 +211,32 @@ fun LogEvent.escape(): LogEvent {
 
 fun LogEventAction.addEscapedData(key: String, value: Any) {
     data[StatisticsEventEscaper.escapeFieldName(key)] = escapeValue(value)
+}
+
+fun com.jetbrains.fus.reporting.model.lion4.LogEvent.escape(): com.jetbrains.fus.reporting.model.lion4.LogEvent {
+    val escapedIds = StatisticsEventEscaper.escapeIds(ids)
+    val escapedGroup = com.jetbrains.fus.reporting.model.lion4.LogEventGroup(
+            StatisticsEventEscaper.escape(group.id),
+            group.version,
+            group.state
+    )
+    val escapedData = StatisticsEventEscaper.escapeEventData(event.data)
+    val escapedEvent = com.jetbrains.fus.reporting.model.lion4.LogEventAction(
+            StatisticsEventEscaper.escapeEventIdOrFieldValue(event.id),
+            escapedData,
+            event.count
+    )
+    return com.jetbrains.fus.reporting.model.lion4.LogEvent(
+            FusRecorder(StatisticsEventEscaper.escape(recorder.id), recorder.version),
+            StatisticsEventEscaper.escape(product),
+            escapedIds,
+            internal,
+            time,
+            StatisticsEventEscaper.escape(build),
+            StatisticsEventEscaper.escape(session),
+            escapedGroup,
+            bucket,
+            escapedEvent,
+            system_data
+    )
 }
