@@ -170,13 +170,23 @@ public final class ValidationSimpleRuleFactory {
     if (currentRuleStart > 0) addNonEmpty(nodes, s.substring(0, currentRuleStart));
 
     while (currentRuleStart >= 0) {
-      int currentRuleEnd = getPairBracket(s,currentRuleStart); // s.indexOf(END, currentRuleStart);
+      int currentRuleEnd;
+      int nextRule;
+
+      if (s.startsWith("regexp:", currentRuleStart + START.length())) {
+        currentRuleEnd = getPairBracket(s,currentRuleStart);
+        nextRule = s.indexOf(START, lastRuleEnd);
+      }else{
+        currentRuleEnd = s.indexOf(END, currentRuleStart);
+        nextRule = s.indexOf(START, currentRuleStart + START.length());
+      }
+
       if (currentRuleEnd == -1) return Collections.emptyList();
       lastRuleEnd = currentRuleEnd + END.length();
 
-      // check invalid '{aaa{bb}'
-      int nextRule = s.indexOf(START, lastRuleEnd); // s.indexOf(START, currentRuleStart + START.length());
-      if (nextRule > 0 && nextRule < lastRuleEnd) return Collections.emptyList();
+      // check invalid '{aaa{bb}', but valid '{regexp:aa{b}}'
+      if (nextRule > 0 && nextRule < lastRuleEnd)
+        return Collections.emptyList();
 
       addNonEmpty(nodes, s.substring(currentRuleStart, lastRuleEnd));
       currentRuleStart = s.indexOf(START, lastRuleEnd);
