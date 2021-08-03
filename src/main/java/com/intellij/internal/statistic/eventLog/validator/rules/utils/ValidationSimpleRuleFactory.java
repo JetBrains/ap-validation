@@ -20,10 +20,10 @@ public final class ValidationSimpleRuleFactory {
   private static final String START = "{";
   private static final String END = "}";
   private static final List<ValidationRuleProducer<?>> RULE_PRODUCERS = Arrays.asList(new BooleanRuleProducer(),
-                                                                                      new EnumRuleProducer(),
-                                                                                      new EnumReferenceRuleProducer(),
-                                                                                      new RegexpRuleProducer(),
-                                                                                      new RegexpReferenceRuleProducer());
+          new EnumRuleProducer(),
+          new EnumReferenceRuleProducer(),
+          new RegexpRuleProducer(),
+          new RegexpReferenceRuleProducer());
   public static final UtilRuleProducer REJECTING_UTIL_URL_PRODUCER = new RejectingUtilRuleProducer();
 
   private final List<ValidationRuleProducer<?>> myRuleProducers;
@@ -58,7 +58,7 @@ public final class ValidationSimpleRuleFactory {
 
   @NotNull
   private FUSRule createRule(@NotNull String rule,
-                            @NotNull EventGroupContextData contextData) {
+                             @NotNull EventGroupContextData contextData) {
     // 1. enum:<value> or {enum:<value>}   => enum:A|B|C
     // 2. enum#<ref-id> or {enum#<ref-id>} => enum#my-enum
     // 3. regexp:<value> or {regexp:<value>} => regexp:0|[1-9][0-9]*
@@ -170,12 +170,12 @@ public final class ValidationSimpleRuleFactory {
     if (currentRuleStart > 0) addNonEmpty(nodes, s.substring(0, currentRuleStart));
 
     while (currentRuleStart >= 0) {
-      int currentRuleEnd = s.indexOf(END, currentRuleStart);
+      int currentRuleEnd = getPairBracket(s,currentRuleStart); // s.indexOf(END, currentRuleStart);
       if (currentRuleEnd == -1) return Collections.emptyList();
       lastRuleEnd = currentRuleEnd + END.length();
 
       // check invalid '{aaa{bb}'
-      int nextRule = s.indexOf(START, currentRuleStart + START.length());
+      int nextRule = s.indexOf(START, lastRuleEnd); // s.indexOf(START, currentRuleStart + START.length());
       if (nextRule > 0 && nextRule < lastRuleEnd) return Collections.emptyList();
 
       addNonEmpty(nodes, s.substring(currentRuleStart, lastRuleEnd));
@@ -185,6 +185,27 @@ public final class ValidationSimpleRuleFactory {
     }
     if (lastRuleEnd > 0) addNonEmpty(nodes, s.substring(lastRuleEnd));
     return nodes;
+  }
+
+  private static int getPairBracket(String s, Integer index){
+    int curIndex;
+
+    Stack<Integer> opensStack = new Stack<>();
+
+    for (curIndex = index; curIndex < s.length(); curIndex++) {
+
+      if (s.startsWith(START, curIndex)) {
+        opensStack.push((int) s.charAt(curIndex));
+      }
+      else if (s.startsWith(END, curIndex)) {
+        opensStack.pop();
+        if (opensStack.empty()) {
+          return curIndex;
+        }
+      }
+    }
+
+    return -1;
   }
 
   private static void addNonEmpty(@NotNull List<? super String> nodes, @Nullable String s) {
