@@ -199,17 +199,16 @@ public final class ValidationSimpleRuleFactory {
 
   private static int getPairBracket(String s, Integer index){
     int curIndex;
-
-    Stack<Integer> opensStack = new Stack<>();
+    int opensStack = 0;
 
     for (curIndex = index; curIndex < s.length(); curIndex++) {
 
       if (s.startsWith(START, curIndex)) {
-        opensStack.push((int) s.charAt(curIndex));
+        opensStack++;
       }
       else if (s.startsWith(END, curIndex)) {
-        opensStack.pop();
-        if (opensStack.empty()) {
+        opensStack--;
+        if (opensStack==0) {
           return curIndex;
         }
       }
