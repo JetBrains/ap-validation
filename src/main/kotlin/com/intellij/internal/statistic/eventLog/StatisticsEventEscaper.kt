@@ -226,6 +226,8 @@ fun com.jetbrains.fus.reporting.model.lion4.LogEvent.escape(): com.jetbrains.fus
             escapedData,
             event.count
     )
+    val eventSession = session
+    val escapedSession = if (eventSession == null) null else StatisticsEventEscaper.escape(eventSession)
     return com.jetbrains.fus.reporting.model.lion4.LogEvent(
             FusRecorder(StatisticsEventEscaper.escape(recorder.id), recorder.version),
             StatisticsEventEscaper.escape(product),
@@ -233,7 +235,7 @@ fun com.jetbrains.fus.reporting.model.lion4.LogEvent.escape(): com.jetbrains.fus
             internal,
             time,
             StatisticsEventEscaper.escape(build),
-            StatisticsEventEscaper.escape(session),
+            escapedSession,
             escapedGroup,
             bucket,
             escapedEvent,
