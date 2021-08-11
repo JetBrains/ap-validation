@@ -23,7 +23,7 @@ val artifactID = "ap-validation"
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21")
     implementation("org.jetbrains:annotations:20.1.0")
-    implementation("com.jetbrains.fus.reporting:model:46")
+    implementation("com.jetbrains.fus.reporting:model:47")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("com.google.code.gson:gson:2.8.6")
     testImplementation("junit:junit:4.12")
