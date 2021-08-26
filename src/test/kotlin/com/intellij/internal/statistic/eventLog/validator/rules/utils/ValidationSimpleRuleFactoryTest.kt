@@ -16,6 +16,8 @@ class ValidationSimpleRuleFactoryTest {
     assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("aa{bb}cc"), listOf("aa", "{bb}", "cc"))
     assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("{bb}{cc}"), listOf("{bb}", "{cc}"))
     assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("a{bb}v{cc}d"), listOf("a", "{bb}", "v", "{cc}", "d"))
+    assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("{regexp:[A-Z]{2}}"), listOf("{regexp:[A-Z]{2}}"))
+    assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("{regexp:[A-Z]{2}}aa{bb}"), listOf("{regexp:[A-Z]{2}}","aa","{bb}"))
     assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("ccc}ddd"), listOf("ccc}ddd"))
 
     // incorrect
@@ -24,6 +26,8 @@ class ValidationSimpleRuleFactoryTest {
     assert(ValidationSimpleRuleFactory.parseSimpleExpression("{bb}{cc").isEmpty())
     assert(ValidationSimpleRuleFactory.parseSimpleExpression("{bb{vv}vv}").isEmpty())
     assert(ValidationSimpleRuleFactory.parseSimpleExpression("{{v}").isEmpty())
+    assert(ValidationSimpleRuleFactory.parseSimpleExpression("{regexp:[A-Z]{5").isEmpty())
+    assert(ValidationSimpleRuleFactory.parseSimpleExpression("{regexp:[A-Z]{2}}aa{b{vv}b}").isEmpty())
   }
 
   @Test
@@ -35,5 +39,11 @@ class ValidationSimpleRuleFactoryTest {
     assert(rules[0] is EnumValidationRule)
     assert(rules[1] is EnumValidationRule)
     assert(rules[2] is RegexpValidationRule)
+  }
+
+  @Test
+  fun test_inline_regexp()
+  {
+    assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("{regexp:[A-Z]{2}}"), listOf("{regexp:[A-Z]{2}}"))
   }
 }
