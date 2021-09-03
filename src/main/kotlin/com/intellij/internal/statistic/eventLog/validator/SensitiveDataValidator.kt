@@ -88,7 +88,7 @@ open class SensitiveDataValidator<S: ValidationRuleStorage<*>>(val validationRul
     val context = EventContext.create(eventId, data)
     val validatedEventId = guaranteeCorrectEventId(context, groupRules)
     val validatedEventData = guaranteeCorrectEventData(context, groupRules)
-    return ValidatedEvent(validatedEventId, validatedEventData)
+    return ValidatedEvent(validatedEventId, HashMap(validatedEventData))
   }
 
   protected open fun guaranteeCorrectEventId(context: EventContext, groupRules: EventGroupRules?): String {

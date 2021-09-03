@@ -1,6 +1,7 @@
 package com.intellij.internal.statistic.eventLog.validator
 
 import com.intellij.internal.statistic.eventLog.EventLogBuild.EVENT_LOG_BUILD_PRODUCER
+import com.intellij.internal.statistic.eventLog.TestValidatorReturningImmutableData
 import com.intellij.internal.statistic.eventLog.newLogEvent
 import com.jetbrains.fus.reporting.model.metadata.EventGroupRemoteDescriptors
 import org.junit.Test
@@ -108,6 +109,18 @@ class SensitiveDataValidatorTest {
         assertEquals(1, data.size)
         assertEquals(listOf(ValidationResultType.UNDEFINED_RULE.description, ValidationResultType.UNDEFINED_RULE.description),
             data[ValidationResultType.UNDEFINED_RULE.description])
+    }
+
+    @Test
+    fun `test data in LogEventAction is always mutable`() {
+        val groupDescriptors = createGroupDescriptors()
+        val sensitiveDataValidator =
+            TestValidatorReturningImmutableData(SimpleValidationRuleStorage(groupDescriptors, EVENT_LOG_BUILD_PRODUCER))
+        val validatedEvent =
+            sensitiveDataValidator.validateEvent(createEventLog(hashMapOf("count" to listOf("foo", "bar"))))
+        val data = validatedEvent?.event?.data
+        assertNotNull(data)
+        data["key"] = "value"
     }
 
     private fun createEventLog(eventData: HashMap<String, *>) = newLogEvent(session = "80bb576ed123",
