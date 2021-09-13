@@ -19,6 +19,7 @@ class ValidationSimpleRuleFactoryTest {
     assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("{regexp:[A-Z]{2}}"), listOf("{regexp:[A-Z]{2}}"))
     assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("{regexp:[A-Z]{2}}aa{bb}"), listOf("{regexp:[A-Z]{2}}","aa","{bb}"))
     assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("ccc}ddd"), listOf("ccc}ddd"))
+    assertEquals(ValidationSimpleRuleFactory.parseSimpleExpression("aaa{regexp:[A-Z]}bbb"), listOf("aaa","{regexp:[A-Z]}","bbb"))
 
     // incorrect
     assert(ValidationSimpleRuleFactory.parseSimpleExpression("").isEmpty())
