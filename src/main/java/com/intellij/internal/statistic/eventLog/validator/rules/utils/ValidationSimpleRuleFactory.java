@@ -175,7 +175,7 @@ public final class ValidationSimpleRuleFactory {
 
       if (s.startsWith("regexp:", currentRuleStart + START.length())) {
         currentRuleEnd = getPairBracket(s,currentRuleStart);
-        nextRule = s.indexOf(START, lastRuleEnd);
+        nextRule = s.indexOf(START, currentRuleEnd);
       }else{
         currentRuleEnd = s.indexOf(END, currentRuleStart);
         nextRule = s.indexOf(START, currentRuleStart + START.length());
@@ -184,7 +184,7 @@ public final class ValidationSimpleRuleFactory {
       if (currentRuleEnd == -1) return Collections.emptyList();
       lastRuleEnd = currentRuleEnd + END.length();
 
-      // check invalid '{aaa{bb}', but valid '{regexp:aa{b}}'
+      // check invalid '{aaa{bb}', but valid '{regexp:aa{b}}' and '{regexp:aa}bb'
       if (nextRule > 0 && nextRule < lastRuleEnd)
         return Collections.emptyList();
 
