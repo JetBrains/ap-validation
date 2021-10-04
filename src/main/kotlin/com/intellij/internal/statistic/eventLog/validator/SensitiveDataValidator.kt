@@ -51,7 +51,8 @@ open class SensitiveDataValidator<S: ValidationRuleStorage<*>>(val validationRul
             event.group,
             event.bucket,
             validatedEvent,
-            event.system_data)
+            event.system_data,
+            event.client_data)
   }
 
   /**

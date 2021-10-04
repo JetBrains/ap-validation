@@ -239,6 +239,7 @@ fun com.jetbrains.fus.reporting.model.lion4.LogEvent.escape(): com.jetbrains.fus
             escapedGroup,
             bucket,
             escapedEvent,
-            system_data
+            system_data,
+            client_data
     )
 }
