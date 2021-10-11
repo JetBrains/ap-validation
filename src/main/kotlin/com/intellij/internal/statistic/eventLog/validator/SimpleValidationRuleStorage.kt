@@ -6,7 +6,6 @@ import com.intellij.internal.statistic.eventLog.connection.metadata.EventLogBuil
 import com.intellij.internal.statistic.eventLog.validator.rules.beans.EventGroupRules
 import com.intellij.internal.statistic.eventLog.validator.rules.utils.UtilRuleProducer
 import com.intellij.internal.statistic.eventLog.validator.rules.utils.ValidationSimpleRuleFactory
-import com.intellij.internal.statistic.eventLog.validator.storage.GlobalRulesHolder
 import com.jetbrains.fus.reporting.model.metadata.EventGroupRemoteDescriptors
 
 /**
@@ -40,15 +39,9 @@ class SimpleValidationRuleStorage<T : Comparable<T>?> @JvmOverloads constructor(
   private fun updateEventGroupRules(descriptors: EventGroupRemoteDescriptors) {
     synchronized(lock) {
       eventsValidators.clear()
-      eventsValidators.putAll(createValidators(descriptors))
+      eventsValidators.putAll(createValidators(descriptors, validationRuleFactory, excludedFields))
       filterRules = EventGroupsFilterRules.create(descriptors, buildParser)
     }
-  }
-
-  private fun createValidators(descriptors: EventGroupRemoteDescriptors): Map<String?, EventGroupRules> {
-    val globalRulesHolder = GlobalRulesHolder(descriptors.rules)
-    val groups = descriptors.groups
-    return groups.associate { it.id to EventGroupRules.create(it, globalRulesHolder, validationRuleFactory, excludedFields) }
   }
 
   override fun isUnreachable(): Boolean = false
