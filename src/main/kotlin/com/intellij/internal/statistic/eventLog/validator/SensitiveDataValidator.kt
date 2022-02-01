@@ -115,7 +115,7 @@ open class SensitiveDataValidator<S: ValidationRuleStorage<*>>(val validationRul
                                 entryValue: Any): EventDataField {
     if (validationRulesStorage.isUnreachable()) return EventDataField(ValidationResultType.UNREACHABLE_METADATA.description,
       ValidationResultType.UNREACHABLE_METADATA.description)
-    return if (groupRules == null) return EventDataField(ValidationResultType.UNDEFINED_RULE.description,
+    return if (groupRules == null) EventDataField(ValidationResultType.UNDEFINED_RULE.description,
       ValidationResultType.UNDEFINED_RULE.description)
     else groupRules.validateEventData(key, entryValue, context)
   }
