@@ -1,3 +1,5 @@
+[![internal JetBrains project](https://jb.gg/badges/internal.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+
 # Library for validating statistics events before sending them to the server
 
 
